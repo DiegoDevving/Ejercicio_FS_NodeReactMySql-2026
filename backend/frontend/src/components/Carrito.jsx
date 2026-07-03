@@ -1,8 +1,7 @@
 import React from "react";
 import { registrarVenta } from "../services/api";
 
-function Carrito({ carrito, setCarrito, setVenta }) {
-
+function Carrito({ carrito, setCarrito, setVenta, onVentaExitosa }) {
     const aumentar = (id) => {
         const nuevoCarrito = carrito.map(producto => {
             if (producto.id === id) {
@@ -68,6 +67,8 @@ function Carrito({ carrito, setCarrito, setVenta }) {
             });
 
             alert("Venta realizada con éxito");
+
+            if (onVentaExitosa) onVentaExitosa();
             
             // 2. DESPUÉS vaciamos el carrito
             setCarrito([]);
