@@ -1,12 +1,28 @@
+import { useState } from "react";
 import Catalogo from "./components/Catalogo";
+import Carrito from "./components/Carrito";
 
 function App() {
 
-    return (
+  const [carrito, setCarrito] = useState([]);
 
-        <Catalogo />
+  return (
+    <div>
 
-    );
+      <Catalogo
+        carrito={carrito}
+        setCarrito={setCarrito}
+      />
+
+      <hr />
+
+      <Carrito
+        carrito={carrito}
+        setCarrito={setCarrito}
+      />
+
+    </div>
+  );
 
 }
 

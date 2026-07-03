@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
-function Catalogo() {
+function Catalogo({ carrito, setCarrito }) {
 
     const [productos, setProductos] = useState([]);
-    const [busqueda, setBusqueda] = useState([]);
-    const [textoBuscar, setTextoBuscar] = useState("");
+    const [busqueda, setBusqueda] = useState("");
 
     useEffect(() => {
-
         cargarProductos();
-
     }, []);
 
     const cargarProductos = async () => {
@@ -18,37 +15,52 @@ function Catalogo() {
         try {
 
             const respuesta = await api.get("/productos");
-
             setProductos(respuesta.data);
-            setBusqueda(respuesta.data);
 
         } catch (error) {
 
-            console.log(error);
+            console.error(error);
 
         }
 
     };
 
-    const buscarProducto = (e) => {
-
-        const texto = e.target.value;
-
-        setTextoBuscar(texto);
-
-        const resultado = productos.filter(producto =>
-            producto.nombre.toLowerCase().includes(texto.toLowerCase())
-        );
-
-        setBusqueda(resultado);
-
-    };
-
     const agregarCarrito = (producto) => {
 
-        alert(`${producto.nombre} agregado al carrito`);
+        const existe = carrito.find(p => p.id === producto.id);
+
+        if (existe) {
+
+            if (existe.cantidad >= producto.stock) {
+                alert("No hay más stock disponible");
+                return;
+            }
+
+            const nuevoCarrito = carrito.map(p =>
+                p.id === producto.id
+                    ? { ...p, cantidad: p.cantidad + 1 }
+                    : p
+            );
+
+            setCarrito(nuevoCarrito);
+
+        } else {
+
+            setCarrito([
+                ...carrito,
+                {
+                    ...producto,
+                    cantidad: 1
+                }
+            ]);
+
+        }
 
     };
+
+    const productosFiltrados = productos.filter(producto =>
+        producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    );
 
     return (
 
@@ -59,11 +71,11 @@ function Catalogo() {
             <input
                 type="text"
                 placeholder="Buscar producto..."
-                value={textoBuscar}
-                onChange={buscarProducto}
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
             />
 
-            <table border="1">
+            <table border="1" cellPadding="8">
 
                 <thead>
 
@@ -81,7 +93,7 @@ function Catalogo() {
 
                 <tbody>
 
-                    {busqueda.map(producto => (
+                    {productosFiltrados.map(producto => (
 
                         <tr key={producto.id}>
 
