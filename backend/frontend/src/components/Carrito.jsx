@@ -1,7 +1,7 @@
 import React from "react";
 import { registrarVenta } from "../services/api";
 
-function Carrito({ carrito, setCarrito }) {
+function Carrito({ carrito, setCarrito, setVenta }) {
 
     const aumentar = (id) => {
         const nuevoCarrito = carrito.map(producto => {
@@ -47,31 +47,36 @@ function Carrito({ carrito, setCarrito }) {
         0
     );
 
-    // 💡 Movido arriba antes del return para que sea accesible y ejecutable
     const confirmarVenta = async () => {
-    if (carrito.length === 0) {
-        alert("El carrito está vacío");
-        return;
-    }
+        if (carrito.length === 0) {
+            alert("El carrito está vacío");
+            return;
+        }
 
-    try {
-        await registrarVenta({
-            carrito,
-            metodo_pago: "efectivo"
-        });
+        try {
+            await registrarVenta({
+                carrito,
+                metodo_pago: "efectivo"
+            });
 
-        alert("Venta realizada con éxito");
-        setCarrito([]);
+            // 1. Primero guardamos la venta con los datos del carrito actual
+            setVenta({
+                folio: Date.now(),
+                fecha: new Date().toLocaleString(),
+                productos: carrito, // Transfiere los productos al ticket
+                total: total
+            });
 
-    } catch (error) {
+            alert("Venta realizada con éxito");
+            
+            // 2. DESPUÉS vaciamos el carrito
+            setCarrito([]);
 
-        console.log(error);
-        console.log(error.response);
-        console.log(error.response?.data);
-
-        alert(JSON.stringify(error.response?.data));
-    }
-};
+        } catch (error) {
+            console.error("Error al registrar venta:", error);
+            alert("No fue posible registrar la venta");
+        }
+    };
 
     return (
         <div>
@@ -110,7 +115,6 @@ function Carrito({ carrito, setCarrito }) {
 
             <h2>Total: ${total.toFixed(2)}</h2>
             
-            {/* 💡 El botón ahora está integrado correctamente dentro del árbol de componentes JSX */}
             <button 
                 onClick={confirmarVenta}
                 style={{ marginTop: "15px", padding: "8px 16px", cursor: "pointer" }}

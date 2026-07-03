@@ -109,3 +109,39 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.ticket{
+
+    margin-top:30px;
+
+    padding:20px;
+
+    border:1px solid black;
+
+}
+
+@media print {
+    /* Ocultamos absolutamente todo el cuerpo de la app */
+    body > div > *:not(.ticket) {
+        display: none !important;
+    }
+
+    /* Le quitamos márgenes molestos que añade el navegador por defecto */
+    @page {
+        margin: 0;
+    }
+
+    /* Estilos limpios para que el ticket abarque la hoja */
+    .ticket {
+        border: none; /* Quitamos el borde negro en el papel */
+        margin: 0;
+        padding: 20px;
+        width: 100%;
+        position: static;
+    }
+    
+    /* Ocultamos el botón de imprimir en el papel final */
+    .ticket button {
+        display: none !important;
+    }
+}
